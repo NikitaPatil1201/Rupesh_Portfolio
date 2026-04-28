@@ -1,0 +1,790 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Your Name — Portfolio</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,700;0,900;1,700&family=Outfit:wght@300;400;500;600&display=swap" rel="stylesheet"/>
+<style>
+
+/* ══════════════════════════════════════════
+   THEME TOKENS
+   html[data-theme="light"]  — default
+   html[data-theme="dark"]   — toggled
+══════════════════════════════════════════ */
+html[data-theme="light"] {
+  --bg:        #f8f7f4;
+  --surface:   #ffffff;
+  --card:      #ffffff;
+  --border:    #e8e4de;
+  --border-hi: #d0c9bf;
+  --accent:    #1a4fd6;
+  --accent-d:  #1340b0;
+  --warm:      #c0440a;
+  --green:     #1a6b3c;
+  --text:      #1a1714;
+  --sub:       #6b6560;
+  --dim:       #a09890;
+  --shadow:    0 1px 3px rgba(0,0,0,.06), 0 4px 16px rgba(0,0,0,.06);
+  --shadow-md: 0 2px 8px rgba(0,0,0,.08), 0 8px 32px rgba(0,0,0,.08);
+  --nav-bg:    rgba(248,247,244,.92);
+  --footer-bg: #1a1714;
+  --footer-c:  rgba(248,247,244,.45);
+  --toggle-bg: #e8e4de;
+  --toggle-knob: #1a1714;
+}
+
+html[data-theme="dark"] {
+  --bg:        #080808;
+  --surface:   #111111;
+  --card:      #161616;
+  --border:    #242424;
+  --border-hi: #303030;
+  --accent:    #4f7fff;
+  --accent-d:  #3a6bef;
+  --warm:      #ff8c5a;
+  --green:     #4caf7a;
+  --text:      #f0ede8;
+  --sub:       #9a9690;
+  --dim:       #555;
+  --shadow:    0 1px 3px rgba(0,0,0,.3), 0 4px 16px rgba(0,0,0,.3);
+  --shadow-md: 0 2px 8px rgba(0,0,0,.4), 0 8px 32px rgba(0,0,0,.4);
+  --nav-bg:    rgba(8,8,8,.88);
+  --footer-bg: #000000;
+  --footer-c:  rgba(240,237,232,.35);
+  --toggle-bg: #2a2a2a;
+  --toggle-knob: #f0ede8;
+}
+
+/* ══════════════════════════════════════════
+   BASE
+══════════════════════════════════════════ */
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+html { scroll-behavior: smooth; -webkit-text-size-adjust: 100%; }
+body {
+  background: var(--bg);
+  color: var(--text);
+  font-family: 'Outfit', system-ui, sans-serif;
+  font-size: clamp(.9rem, 2vw, 1rem);
+  line-height: 1.65;
+  overflow-x: hidden;
+  transition: background .35s ease, color .35s ease;
+}
+img { display: block; max-width: 100%; }
+a { color: inherit; text-decoration: none; }
+ul { list-style: none; }
+
+/* fluid type */
+:root {
+  --tx--1: clamp(.75rem,1.8vw,.875rem);
+  --tx-0:  clamp(.9rem,2vw,1rem);
+  --tx-1:  clamp(1rem,2.2vw,1.125rem);
+  --tx-2:  clamp(1.25rem,3vw,1.5rem);
+  --tx-3:  clamp(1.75rem,4vw,2.25rem);
+  --tx-4:  clamp(2.4rem,6vw,3.6rem);
+  --tx-5:  clamp(3.2rem,8.5vw,5.5rem);
+  --fh: 'Playfair Display', Georgia, serif;
+  --fb: 'Outfit', system-ui, sans-serif;
+  --r: 6px;
+  --gap: clamp(1rem,3vw,1.5rem);
+}
+
+.wrapper { width: min(1120px, 100% - 3rem); margin-inline: auto; }
+section { padding-block: clamp(4rem,10vw,8rem); }
+
+/* ══════════════════════════════════════════
+   THEME TOGGLE BUTTON
+══════════════════════════════════════════ */
+.theme-toggle {
+  position: relative;
+  width: 52px; height: 28px;
+  background: var(--toggle-bg);
+  border: 1px solid var(--border-hi);
+  border-radius: 100px;
+  cursor: pointer;
+  flex-shrink: 0;
+  transition: background .3s, border-color .3s;
+  padding: 0;
+  outline: none;
+}
+.theme-toggle:focus-visible {
+  box-shadow: 0 0 0 3px rgba(79,127,255,.35);
+}
+.theme-toggle .knob {
+  position: absolute;
+  top: 3px; left: 3px;
+  width: 20px; height: 20px;
+  border-radius: 50%;
+  background: var(--toggle-knob);
+  display: flex; align-items: center; justify-content: center;
+  font-size: .7rem;
+  transition: transform .3s cubic-bezier(.4,0,.2,1), background .3s;
+}
+html[data-theme="dark"] .theme-toggle .knob {
+  transform: translateX(24px);
+}
+.icon-sun, .icon-moon { position: absolute; transition: opacity .3s; line-height: 1; }
+.icon-sun  { opacity: 1; }
+.icon-moon { opacity: 0; }
+html[data-theme="dark"] .icon-sun  { opacity: 0; }
+html[data-theme="dark"] .icon-moon { opacity: 1; }
+
+/* ══════════════════════════════════════════
+   NAV
+══════════════════════════════════════════ */
+nav {
+  position: fixed; inset: 0 0 auto 0; z-index: 200;
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 1rem clamp(1rem,4vw,3rem);
+  background: var(--nav-bg);
+  backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px);
+  border-bottom: 1px solid var(--border);
+  transition: background .35s;
+}
+.nav-logo {
+  font-family: var(--fh); font-style: italic;
+  font-size: clamp(1.1rem,2.5vw,1.3rem); font-weight: 700;
+  color: var(--text); letter-spacing: -.02em;
+}
+.nav-logo span { color: var(--accent); }
+.nav-right { display: flex; align-items: center; gap: 1.5rem; }
+.nav-links { display: flex; gap: clamp(1.2rem,3vw,2.5rem); }
+.nav-links a {
+  font-size: var(--tx--1); font-weight: 500; color: var(--sub);
+  letter-spacing: .05em; text-transform: uppercase; transition: color .2s; position: relative;
+}
+.nav-links a::after {
+  content: ''; position: absolute; bottom: -3px; left: 0;
+  width: 0; height: 1.5px; background: var(--accent); transition: width .25s;
+}
+.nav-links a:hover { color: var(--text); }
+.nav-links a:hover::after { width: 100%; }
+
+.nav-toggle {
+  display: none; flex-direction: column; gap: 5px;
+  cursor: pointer; padding: 4px; background: none; border: none;
+}
+.nav-toggle span {
+  display: block; width: 22px; height: 1.5px;
+  background: var(--text); transition: transform .25s, opacity .25s, background .35s;
+}
+
+/* ══════════════════════════════════════════
+   HERO
+══════════════════════════════════════════ */
+#home {
+  min-height: 100svh; display: grid; place-items: center;
+  padding-top: 5rem; position: relative; overflow: hidden;
+}
+#home::before {
+  content: ''; position: absolute; inset: 0;
+  background-image: radial-gradient(circle, var(--border) 1px, transparent 1px);
+  background-size: 28px 28px; opacity: .7;
+  mask-image: radial-gradient(ellipse 80% 80% at 50% 45%, black 20%, transparent 80%);
+  pointer-events: none;
+}
+#home::after {
+  content: ''; position: absolute; inset: 0;
+  background:
+    radial-gradient(ellipse 50% 45% at 70% 30%, rgba(79,127,255,.08) 0%, transparent 65%),
+    radial-gradient(ellipse 35% 40% at 10% 75%, rgba(192,68,10,.06) 0%, transparent 60%);
+  pointer-events: none;
+}
+.hero-inner { position: relative; z-index: 1; width: min(900px, 100% - 3rem); }
+.hero-badge {
+  display: inline-flex; align-items: center; gap: .5rem;
+  border: 1px solid var(--border); border-radius: 2px; background: var(--surface);
+  padding: .4rem .9rem; font-size: var(--tx--1); font-weight: 500; color: var(--sub);
+  margin-bottom: clamp(1.5rem,3vw,2rem); letter-spacing: .06em; box-shadow: var(--shadow);
+  transition: background .35s, border-color .35s;
+}
+.hero-badge .dot {
+  width: 7px; height: 7px; border-radius: 50%; background: var(--green);
+  animation: pulse 2.2s infinite;
+}
+@keyframes pulse { 0%,100%{opacity:1;transform:scale(1)} 50%{opacity:.5;transform:scale(1.4)} }
+
+h1.hero-name {
+  font-family: var(--fh); font-size: var(--tx-5); font-weight: 900;
+  line-height: .92; letter-spacing: -.04em;
+  margin-bottom: clamp(1.2rem,3vw,1.8rem); color: var(--text);
+}
+h1.hero-name em { font-style: italic; color: var(--accent); display: block; }
+.hero-desc {
+  font-size: var(--tx-1); color: var(--sub); max-width: 48ch;
+  line-height: 1.75; margin-bottom: clamp(2rem,4vw,2.8rem); font-weight: 300;
+}
+.hero-cta { display: flex; flex-wrap: wrap; gap: .9rem; }
+
+.btn {
+  display: inline-flex; align-items: center; gap: .5rem;
+  padding: .75em 1.6em; border-radius: var(--r);
+  font-family: var(--fb); font-size: var(--tx-0); font-weight: 500;
+  cursor: pointer; border: none; transition: all .22s; white-space: nowrap;
+}
+.btn-fill { background: var(--accent); color: #fff; box-shadow: 0 2px 8px rgba(79,127,255,.25); }
+.btn-fill:hover { background: var(--accent-d); transform: translateY(-1px); box-shadow: 0 4px 16px rgba(79,127,255,.3); }
+.btn-ghost { background: var(--surface); border: 1px solid var(--border); color: var(--text); box-shadow: var(--shadow); }
+.btn-ghost:hover { border-color: var(--accent); color: var(--accent); }
+
+.hero-scroll {
+  position: absolute; bottom: 2.5rem; left: 50%; transform: translateX(-50%);
+  display: flex; flex-direction: column; align-items: center; gap: .5rem; z-index: 1;
+}
+.hero-scroll span { font-size: .68rem; letter-spacing: .2em; text-transform: uppercase; color: var(--dim); }
+.scroll-line {
+  width: 1px; height: 44px;
+  background: linear-gradient(to bottom, var(--accent), transparent);
+  animation: sLine 2s ease-in-out infinite;
+}
+@keyframes sLine {
+  0%{transform:scaleY(0);transform-origin:top} 50%{transform:scaleY(1);transform-origin:top}
+  51%{transform:scaleY(1);transform-origin:bottom} 100%{transform:scaleY(0);transform-origin:bottom}
+}
+
+/* ══════════════════════════════════════════
+   SECTION ALTERNATING BG
+══════════════════════════════════════════ */
+#summary, #resume, #contact {
+  background: var(--surface);
+  border-top: 1px solid var(--border);
+  border-bottom: 1px solid var(--border);
+  transition: background .35s, border-color .35s;
+}
+
+/* EYEBROW + TITLE */
+.eyebrow {
+  font-family: var(--fb); font-size: var(--tx--1); font-weight: 600;
+  letter-spacing: .2em; text-transform: uppercase; color: var(--accent);
+  display: flex; align-items: center; gap: .75rem; margin-bottom: .9rem;
+}
+.eyebrow::before { content: ''; display: block; width: 2rem; height: 1.5px; background: var(--accent); flex-shrink: 0; }
+h2.sec-title {
+  font-family: var(--fh); font-size: var(--tx-4); font-weight: 900;
+  line-height: 1.05; letter-spacing: -.025em; color: var(--text);
+  margin-bottom: clamp(2rem,5vw,3.5rem);
+}
+
+/* ══════════════════════════════════════════
+   SUMMARY
+══════════════════════════════════════════ */
+.summary-layout { display: grid; grid-template-columns: 1fr 1fr; gap: var(--gap); margin-bottom: clamp(2.5rem,5vw,4rem); }
+.s-card {
+  background: var(--bg); border: 1px solid var(--border); border-radius: var(--r);
+  padding: clamp(1.4rem,3vw,2rem); position: relative; overflow: hidden;
+  box-shadow: var(--shadow); transition: background .35s, border-color .35s;
+}
+.s-card::before {
+  content: ''; position: absolute; top: 0; left: 0; right: 0;
+  height: 3px; background: linear-gradient(90deg, var(--accent), transparent);
+}
+.s-card h3 {
+  font-size: var(--tx--1); font-weight: 600;
+  letter-spacing: .15em; text-transform: uppercase; color: var(--accent); margin-bottom: 1.1rem;
+}
+.s-card li {
+  font-size: var(--tx-0); color: var(--sub); padding: .4rem 0;
+  border-bottom: 1px solid var(--border);
+  display: flex; align-items: baseline; gap: .6rem; line-height: 1.5;
+  transition: border-color .35s;
+}
+.s-card li:last-child { border-bottom: none; }
+.s-card li::before { content: '→'; color: var(--accent); font-size: .75rem; flex-shrink: 0; }
+
+.career-track { position: relative; display: flex; align-items: flex-start; }
+.career-track::before {
+  content: ''; position: absolute; top: 10px; left: 10px; right: 10px;
+  height: 1px; background: var(--border); transition: background .35s;
+}
+.c-step { flex: 1; display: flex; flex-direction: column; align-items: center; gap: .9rem; position: relative; padding: 0 .5rem; }
+.c-dot { width: 20px; height: 20px; border-radius: 50%; border: 2px solid var(--border); background: var(--surface); position: relative; z-index: 1; transition: all .35s; }
+.c-step.now .c-dot { background: var(--accent); border-color: var(--accent); box-shadow: 0 0 0 5px rgba(79,127,255,.15); }
+.c-label { text-align: center; font-size: var(--tx--1); color: var(--dim); line-height: 1.4; }
+.c-step.now .c-label { color: var(--text); font-weight: 500; }
+.c-label strong { display: block; font-size: var(--tx-0); color: var(--sub); font-weight: 600; margin-bottom: .15rem; }
+.c-step.now .c-label strong { color: var(--text); }
+
+/* ══════════════════════════════════════════
+   PROJECTS
+══════════════════════════════════════════ */
+.projects-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(min(320px,100%),1fr)); gap: var(--gap); }
+.p-card {
+  background: var(--card); border: 1px solid var(--border); border-radius: var(--r);
+  overflow: hidden; display: flex; flex-direction: column;
+  box-shadow: var(--shadow); transition: border-color .22s, transform .22s, box-shadow .22s;
+}
+.p-card:hover { border-color: var(--accent); transform: translateY(-4px); box-shadow: var(--shadow-md); }
+.p-thumb {
+  aspect-ratio: 16/10; background: var(--bg);
+  display: flex; align-items: center; justify-content: center; font-size: 2.8rem;
+  overflow: hidden; position: relative; border-bottom: 1px solid var(--border);
+  transition: background .35s, border-color .35s;
+}
+.p-thumb img { width: 100%; height: 100%; object-fit: cover; transition: transform .4s; }
+.p-card:hover .p-thumb img { transform: scale(1.04); }
+.p-overlay {
+  position: absolute; inset: 0; background: rgba(79,127,255,.85);
+  display: flex; align-items: center; justify-content: center;
+  opacity: 0; transition: opacity .25s;
+  font-size: var(--tx-0); font-weight: 500; color: #fff; letter-spacing: .06em;
+}
+.p-card:hover .p-overlay { opacity: 1; }
+.p-body { padding: clamp(1.2rem,2.5vw,1.6rem); flex: 1; display: flex; flex-direction: column; }
+.p-tag { font-size: var(--tx--1); font-weight: 600; letter-spacing: .12em; text-transform: uppercase; color: var(--warm); margin-bottom: .5rem; }
+.p-body h3 { font-family: var(--fh); font-size: var(--tx-2); font-weight: 700; line-height: 1.2; margin-bottom: .65rem; color: var(--text); }
+.p-body p { font-size: var(--tx--1); color: var(--sub); line-height: 1.65; flex: 1; }
+.p-link { display: inline-flex; align-items: center; gap: .4rem; margin-top: 1.1rem; font-size: var(--tx--1); font-weight: 600; color: var(--accent); letter-spacing: .04em; transition: gap .2s; }
+.p-card:hover .p-link { gap: .65rem; }
+
+/* ══════════════════════════════════════════
+   RESUME
+══════════════════════════════════════════ */
+.resume-grid { display: grid; grid-template-columns: 1fr 1fr; gap: clamp(2rem,5vw,4rem); }
+.r-col h3 {
+  font-size: var(--tx--1); font-weight: 600;
+  letter-spacing: .18em; text-transform: uppercase; color: var(--accent);
+  padding-bottom: .9rem; border-bottom: 2px solid var(--border); margin-bottom: 1.6rem;
+  transition: border-color .35s;
+}
+.r-item {
+  padding-bottom: 1.8rem; margin-bottom: 1.8rem;
+  border-bottom: 1px solid var(--border); position: relative; padding-left: 1.2rem;
+  transition: border-color .35s;
+}
+.r-item::before {
+  content: ''; position: absolute; left: 0; top: .45rem;
+  width: 3px; height: calc(100% - 1.8rem); background: var(--border); border-radius: 2px; transition: background .2s;
+}
+.r-item:hover::before { background: var(--accent); }
+.r-item:last-child { border-bottom: none; margin-bottom: 0; padding-bottom: 0; }
+.r-top { display: flex; justify-content: space-between; align-items: flex-start; gap: 1rem; margin-bottom: .2rem; }
+.r-role { font-size: var(--tx-1); font-weight: 600; color: var(--text); line-height: 1.3; }
+.r-date { font-size: var(--tx--1); color: #fff; background: var(--accent); padding: .15em .55em; border-radius: 3px; white-space: nowrap; flex-shrink: 0; margin-top: .1rem; font-weight: 500; transition: background .35s; }
+.r-org { font-size: var(--tx-0); color: var(--warm); font-weight: 500; margin-bottom: .65rem; }
+.r-bullets { padding-left: 1rem; }
+.r-bullets li { font-size: var(--tx--1); color: var(--sub); margin-bottom: .3rem; list-style: disc; line-height: 1.6; }
+.resume-cta { margin-top: clamp(2.5rem,5vw,3.5rem); text-align: center; }
+
+/* ══════════════════════════════════════════
+   SKILLS
+══════════════════════════════════════════ */
+.skills-grid { display: grid; grid-template-columns: repeat(auto-fill,minmax(min(240px,100%),1fr)); gap: var(--gap); }
+.sk-card {
+  background: var(--card); border: 1px solid var(--border); border-radius: var(--r);
+  padding: clamp(1.3rem,2.5vw,1.8rem); box-shadow: var(--shadow);
+  transition: border-color .2s, box-shadow .2s, background .35s;
+}
+.sk-card:hover { border-color: var(--accent); box-shadow: var(--shadow-md); }
+.sk-icon {
+  width: 42px; height: 42px; border-radius: 10px;
+  background: rgba(79,127,255,.08); border: 1px solid rgba(79,127,255,.15);
+  display: flex; align-items: center; justify-content: center; font-size: 1.2rem; margin-bottom: 1rem;
+}
+.sk-card h3 { font-size: var(--tx-0); font-weight: 600; color: var(--text); margin-bottom: .9rem; }
+.tag-wrap { display: flex; flex-wrap: wrap; gap: .4rem; }
+.tag {
+  background: var(--bg); border: 1px solid var(--border); color: var(--sub);
+  font-size: var(--tx--1); padding: .25em .7em; border-radius: 3px; line-height: 1.5;
+  transition: all .2s, background .35s, border-color .35s;
+}
+.sk-card:hover .tag { border-color: rgba(79,127,255,.3); color: var(--accent); }
+
+/* ══════════════════════════════════════════
+   CONTACT
+══════════════════════════════════════════ */
+.contact-layout { display: grid; grid-template-columns: 1fr 340px; gap: clamp(2rem,5vw,5rem); align-items: start; }
+.cf { display: flex; flex-direction: column; gap: 1rem; }
+.cf-row { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; }
+.fg label { display: block; font-size: var(--tx--1); font-weight: 500; color: var(--sub); margin-bottom: .45rem; letter-spacing: .04em; }
+.fg input, .fg textarea {
+  width: 100%; background: var(--bg); border: 1px solid var(--border); border-radius: var(--r);
+  padding: .75em 1em; color: var(--text); font-family: var(--fb); font-size: var(--tx-0);
+  outline: none; transition: border-color .2s, box-shadow .2s, background .35s; line-height: 1.5;
+}
+.fg input::placeholder, .fg textarea::placeholder { color: var(--dim); }
+.fg input:focus, .fg textarea:focus { border-color: var(--accent); box-shadow: 0 0 0 3px rgba(79,127,255,.12); }
+.fg textarea { resize: vertical; min-height: 130px; }
+.ci-list { display: flex; flex-direction: column; gap: .9rem; }
+.ci-item {
+  display: flex; align-items: center; gap: 1rem;
+  padding: clamp(.9rem,2vw,1.1rem) clamp(1rem,2.5vw,1.3rem);
+  background: var(--bg); border: 1px solid var(--border); border-radius: var(--r);
+  box-shadow: var(--shadow); overflow: hidden;
+  transition: border-color .2s, box-shadow .2s, background .35s;
+}
+.ci-item:hover { border-color: var(--accent); box-shadow: var(--shadow-md); }
+.ci-icon { width: 38px; height: 38px; border-radius: 9px; background: rgba(79,127,255,.08); border: 1px solid rgba(79,127,255,.12); display: flex; align-items: center; justify-content: center; font-size: 1.1rem; flex-shrink: 0; }
+.ci-text { min-width: 0; }
+.ci-label { font-size: var(--tx--1); color: var(--dim); display: block; margin-bottom: .1rem; }
+.ci-val { font-size: var(--tx-0); font-weight: 500; color: var(--text); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; display: block; }
+
+/* ══════════════════════════════════════════
+   FOOTER
+══════════════════════════════════════════ */
+footer {
+  background: var(--footer-bg); color: var(--footer-c);
+  padding: 2rem clamp(1rem,4vw,3rem);
+  display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 1rem;
+  transition: background .35s;
+}
+footer p { font-size: var(--tx--1); }
+.f-links { display: flex; gap: 1.5rem; }
+.f-links a { font-size: var(--tx--1); color: var(--footer-c); transition: color .2s; }
+.f-links a:hover { color: #fff; }
+
+/* ══════════════════════════════════════════
+   REVEAL
+══════════════════════════════════════════ */
+.reveal { opacity: 0; transform: translateY(24px); transition: opacity .6s ease, transform .6s ease; }
+.reveal.in { opacity: 1; transform: none; }
+.d1{transition-delay:.1s} .d2{transition-delay:.2s} .d3{transition-delay:.3s}
+
+/* ══════════════════════════════════════════
+   RESPONSIVE
+══════════════════════════════════════════ */
+@media(max-width:900px){
+  .resume-grid { grid-template-columns: 1fr; gap: 2.5rem; }
+  .contact-layout { grid-template-columns: 1fr; }
+}
+@media(max-width:640px){
+  .nav-links { display: none; }
+  .nav-links.open {
+    display: flex; flex-direction: column; position: fixed; inset: 0;
+    background: var(--bg); align-items: center; justify-content: center; gap: 2.5rem; z-index: 199;
+  }
+  .nav-links.open a { font-size: var(--tx-3); }
+  .nav-toggle { display: flex; z-index: 201; }
+  .nav-toggle.active span:nth-child(1){ transform: translateY(6.5px) rotate(45deg); }
+  .nav-toggle.active span:nth-child(2){ opacity: 0; }
+  .nav-toggle.active span:nth-child(3){ transform: translateY(-6.5px) rotate(-45deg); }
+  .summary-layout, .cf-row { grid-template-columns: 1fr; }
+  .career-track { flex-direction: column; gap: 1.5rem; }
+  .career-track::before { display: none; }
+  .hero-scroll { display: none; }
+}
+</style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav>
+  <a href="#home" class="nav-logo">Your<span>Name</span></a><!-- ✏️ -->
+  <div class="nav-right">
+    <ul class="nav-links" id="navLinks">
+      <li><a href="#home">Home</a></li>
+      <li><a href="#summary">Summary</a></li>
+      <li><a href="#projects">Projects</a></li>
+      <li><a href="#resume">Resume</a></li>
+      <li><a href="#skills">Skills</a></li>
+      <li><a href="#contact">Contact</a></li>
+    </ul>
+    <!-- DARK / LIGHT TOGGLE -->
+    <button class="theme-toggle" id="themeToggle" aria-label="Toggle dark mode">
+      <span class="knob">
+        <span class="icon-sun">☀️</span>
+        <span class="icon-moon">🌙</span>
+      </span>
+    </button>
+    <button class="nav-toggle" id="navToggle" aria-label="Toggle menu">
+      <span></span><span></span><span></span>
+    </button>
+  </div>
+</nav>
+
+<!-- HERO -->
+<section id="home">
+  <div class="hero-inner">
+    <div class="hero-badge">
+      <span class="dot"></span>
+      Available for opportunities<!-- ✏️ -->
+    </div>
+    <h1 class="hero-name">
+      YOUR<!-- ✏️ first name -->
+      <em>NAME</em><!-- ✏️ last name / title -->
+    </h1>
+    <p class="hero-desc">
+      One compelling sentence about what you do and what drives you.<!-- ✏️ -->
+    </p>
+    <div class="hero-cta">
+      <a href="#projects" class="btn btn-fill">View Projects →</a>
+      <a href="#contact" class="btn btn-ghost">Get in Touch</a>
+    </div>
+  </div>
+  <div class="hero-scroll"><span>Scroll</span><div class="scroll-line"></div></div>
+</section>
+
+<!-- SUMMARY -->
+<section id="summary">
+  <div class="wrapper">
+    <p class="eyebrow reveal">About Me</p>
+    <h2 class="sec-title reveal">Summary</h2>
+    <div class="summary-layout">
+      <div class="s-card reveal d1">
+        <h3>Strengths</h3>
+        <ul>
+          <li>Your first strength — keep it specific and real.</li><!-- ✏️ -->
+          <li>Your second strength.</li>
+          <li>Your third strength.</li>
+        </ul>
+      </div>
+      <div class="s-card reveal d2">
+        <h3>Interests</h3>
+        <ul>
+          <li>An honest interest or fun personal quirk.</li><!-- ✏️ -->
+          <li>Another one — these make you memorable.</li>
+          <li>Third one.</li>
+        </ul>
+      </div>
+    </div>
+    <div class="career-track reveal">
+      <div class="c-step">
+        <div class="c-dot"></div>
+        <div class="c-label"><strong>Step 1</strong>Role Title</div><!-- ✏️ -->
+      </div>
+      <div class="c-step now">
+        <div class="c-dot"></div>
+        <div class="c-label"><strong>Step 2 — Here</strong>Current Stage</div><!-- ✏️ -->
+      </div>
+      <div class="c-step">
+        <div class="c-dot"></div>
+        <div class="c-label"><strong>Step 3</strong>Future Goal</div><!-- ✏️ -->
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- PROJECTS -->
+<section id="projects">
+  <div class="wrapper">
+    <p class="eyebrow reveal">Work</p>
+    <h2 class="sec-title reveal">Projects</h2>
+    <div class="projects-grid">
+
+      <a href="#" class="p-card reveal">
+        <div class="p-thumb">🔧<!-- ✏️ replace with <img src="project1.jpg" alt=""> --><div class="p-overlay">View Project</div></div>
+        <div class="p-body">
+          <span class="p-tag">Category</span><!-- ✏️ e.g. Robotics, CAD, Web -->
+          <h3>Project Title</h3><!-- ✏️ -->
+          <p>Short description of the project and your role in it.</p><!-- ✏️ -->
+          <span class="p-link">View details →</span>
+        </div>
+      </a>
+
+      <a href="#" class="p-card reveal d1">
+        <div class="p-thumb">⚙️<div class="p-overlay">View Project</div></div>
+        <div class="p-body">
+          <span class="p-tag">Category</span>
+          <h3>Project Title</h3>
+          <p>Short description of the project and your role in it.</p>
+          <span class="p-link">View details →</span>
+        </div>
+      </a>
+
+      <a href="#" class="p-card reveal d2">
+        <div class="p-thumb">💡<div class="p-overlay">View Project</div></div>
+        <div class="p-body">
+          <span class="p-tag">Category</span>
+          <h3>Project Title</h3>
+          <p>Short description of the project and your role in it.</p>
+          <span class="p-link">View details →</span>
+        </div>
+      </a>
+
+    </div>
+  </div>
+</section>
+
+<!-- RESUME -->
+<section id="resume">
+  <div class="wrapper">
+    <p class="eyebrow reveal">Background</p>
+    <h2 class="sec-title reveal">Resume</h2>
+    <div class="resume-grid">
+      <div class="r-col reveal">
+        <h3>Experience</h3>
+        <div class="r-item">
+          <div class="r-top">
+            <span class="r-role">Job Title</span><!-- ✏️ -->
+            <span class="r-date">Month Year – Present</span><!-- ✏️ -->
+          </div>
+          <div class="r-org">Company Name — City, Country</div><!-- ✏️ -->
+          <ul class="r-bullets">
+            <li>What you did and the measurable impact.</li><!-- ✏️ -->
+            <li>Second accomplishment with numbers if possible.</li>
+          </ul>
+        </div>
+        <div class="r-item">
+          <div class="r-top">
+            <span class="r-role">Job Title</span>
+            <span class="r-date">Month Year – Month Year</span>
+          </div>
+          <div class="r-org">Company Name — City, Country</div>
+          <ul class="r-bullets">
+            <li>Key achievement or responsibility.</li>
+            <li>Second bullet.</li>
+          </ul>
+        </div>
+      </div>
+      <div class="r-col reveal d1">
+        <h3>Education</h3>
+        <div class="r-item">
+          <div class="r-top">
+            <span class="r-role">Degree, Field</span><!-- ✏️ -->
+            <span class="r-date">Year – Year</span><!-- ✏️ -->
+          </div>
+          <div class="r-org">University Name — City, Country</div><!-- ✏️ -->
+          <ul class="r-bullets">
+            <li>Specialization or minor.</li>
+            <li>GPA: X.XX / 4.00</li>
+          </ul>
+        </div>
+        <div class="r-item">
+          <div class="r-top">
+            <span class="r-role">Degree, Field</span>
+            <span class="r-date">Year – Year</span>
+          </div>
+          <div class="r-org">University Name — City, Country</div>
+          <ul class="r-bullets">
+            <li>Specialization or minor.</li>
+            <li>GPA: X.XX / 4.00</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+    <div class="resume-cta reveal">
+      <a href="resume.pdf" download class="btn btn-ghost">↓ Download Resume PDF</a>
+    </div>
+  </div>
+</section>
+
+<!-- SKILLS -->
+<section id="skills">
+  <div class="wrapper">
+    <p class="eyebrow reveal">Toolbox</p>
+    <h2 class="sec-title reveal">Skills</h2>
+    <div class="skills-grid">
+      <div class="sk-card reveal">
+        <div class="sk-icon">✏️</div>
+        <h3>Category 1</h3><!-- ✏️ -->
+        <div class="tag-wrap">
+          <span class="tag">Tool A</span><span class="tag">Tool B</span><!-- ✏️ -->
+          <span class="tag">Tool C</span><span class="tag">Tool D</span>
+        </div>
+      </div>
+      <div class="sk-card reveal d1">
+        <div class="sk-icon">⚡</div>
+        <h3>Category 2</h3>
+        <div class="tag-wrap">
+          <span class="tag">Tool A</span><span class="tag">Tool B</span><span class="tag">Tool C</span>
+        </div>
+      </div>
+      <div class="sk-card reveal d2">
+        <div class="sk-icon">🧪</div>
+        <h3>Category 3</h3>
+        <div class="tag-wrap">
+          <span class="tag">Tool A</span><span class="tag">Tool B</span><span class="tag">Tool C</span>
+        </div>
+      </div>
+      <div class="sk-card reveal d3">
+        <div class="sk-icon">📐</div>
+        <h3>Category 4</h3>
+        <div class="tag-wrap">
+          <span class="tag">Tool A</span><span class="tag">Tool B</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- CONTACT -->
+<section id="contact">
+  <div class="wrapper">
+    <p class="eyebrow reveal">Say Hi</p>
+    <h2 class="sec-title reveal">Get in Touch</h2>
+    <div class="contact-layout">
+      <form class="cf reveal" name="contact" method="POST" data-netlify="true">
+        <div class="cf-row">
+          <div class="fg"><label>First name</label><input type="text" name="first_name" placeholder="Ada" required/></div>
+          <div class="fg"><label>Last name</label><input type="text" name="last_name" placeholder="Lovelace"/></div>
+        </div>
+        <div class="fg"><label>Email</label><input type="email" name="email" placeholder="ada@email.com" required/></div>
+        <div class="fg"><label>Subject</label><input type="text" name="subject" placeholder="Let's collaborate"/></div>
+        <div class="fg"><label>Message</label><textarea name="message" placeholder="What's on your mind?" required></textarea></div>
+        <button type="submit" class="btn btn-fill" style="align-self:flex-start">Send Message →</button>
+      </form>
+      <div class="ci-list reveal d1">
+        <a href="https://maps.google.com/?q=Your+City" target="_blank" class="ci-item">
+          <div class="ci-icon">📍</div>
+          <div class="ci-text"><span class="ci-label">Location</span><span class="ci-val">Your City, Country</span></div><!-- ✏️ -->
+        </a>
+        <a href="mailto:your@email.com" class="ci-item">
+          <div class="ci-icon">✉️</div>
+          <div class="ci-text"><span class="ci-label">Email</span><span class="ci-val">your@email.com</span></div><!-- ✏️ -->
+        </a>
+        <a href="https://linkedin.com/in/yourhandle" target="_blank" class="ci-item">
+          <div class="ci-icon">💼</div>
+          <div class="ci-text"><span class="ci-label">LinkedIn</span><span class="ci-val">linkedin.com/in/yourhandle</span></div><!-- ✏️ -->
+        </a>
+        <a href="https://github.com/yourhandle" target="_blank" class="ci-item">
+          <div class="ci-icon">🐙</div>
+          <div class="ci-text"><span class="ci-label">GitHub</span><span class="ci-val">github.com/yourhandle</span></div><!-- ✏️ -->
+        </a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer>
+  <p>© <span id="yr"></span> Your Name. All rights reserved.</p><!-- ✏️ -->
+  <div class="f-links">
+    <a href="#home">Back to top ↑</a>
+    <a href="mailto:your@email.com">Email</a><!-- ✏️ -->
+    <a href="https://linkedin.com/in/yourhandle" target="_blank">LinkedIn</a><!-- ✏️ -->
+  </div>
+</footer>
+
+<script>
+  // ── Year ──
+  document.getElementById('yr').textContent = new Date().getFullYear();
+
+  // ── Theme toggle — persists in localStorage ──
+  const html    = document.documentElement;
+  const toggleBtn = document.getElementById('themeToggle');
+
+  // Apply saved theme on load (default: light)
+  const saved = localStorage.getItem('theme') || 'light';
+  html.setAttribute('data-theme', saved);
+
+  toggleBtn.addEventListener('click', () => {
+    const current = html.getAttribute('data-theme');
+    const next    = current === 'light' ? 'dark' : 'light';
+    html.setAttribute('data-theme', next);
+    localStorage.setItem('theme', next);
+  });
+
+  // ── Mobile nav ──
+  const navToggle = document.getElementById('navToggle');
+  const navLinks  = document.getElementById('navLinks');
+  navToggle.addEventListener('click', () => {
+    navToggle.classList.toggle('active');
+    navLinks.classList.toggle('open');
+    document.body.style.overflow = navLinks.classList.contains('open') ? 'hidden' : '';
+  });
+  navLinks.querySelectorAll('a').forEach(a => a.addEventListener('click', () => {
+    navToggle.classList.remove('active');
+    navLinks.classList.remove('open');
+    document.body.style.overflow = '';
+  }));
+
+  // ── Scroll reveal ──
+  const obs = new IntersectionObserver(
+    es => es.forEach(e => { if(e.isIntersecting){ e.target.classList.add('in'); obs.unobserve(e.target); } }),
+    { threshold: 0.1 }
+  );
+  document.querySelectorAll('.reveal').forEach(el => obs.observe(el));
+</script>
+</body>
+</html>
